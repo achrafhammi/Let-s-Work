@@ -1,4 +1,4 @@
-package subscriptionservice.subscription;
+package subscriptionservice.exceptions;
 
 public class SubscriptionNotExistException extends Exception{
     public SubscriptionNotExistException(String s) {
