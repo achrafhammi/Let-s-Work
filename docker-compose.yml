@@ -4,11 +4,26 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_DB: ${DB_USERS_NAME}
+    ports:
+      - "5432:5432"
     volumes:
       - users-db-vol:/var/lib/postgresql/data
     networks:
       - users-network
+
+  subscription-db:
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_SUSBCRIPTION_NAME}
+    ports:
+      - "5431:5432"
+    volumes:
+      - subscription-db-vol:/var/lib/postgresql/data
+    networks:
+      - subscription-network
 
   keycloak:
     image: quay.io/keycloak/keycloak
@@ -17,7 +32,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_DB: ${KC_DB}
       KC_DB_URL_HOST: users-db
-      KC_DB_URL_DATABASE: ${DB_NAME}
+      KC_DB_URL_DATABASE: ${DB_USERS_NAME}
       KC_DB_URL_PORT: ${KC_DB_URL_PORT}
       KC_DB_USERNAME: ${DB_USER}
       KC_DB_PASSWORD: ${DB_PASSWORD}
@@ -33,6 +48,8 @@ services:
 
 networks:
   users-network:
+  subscription-network:
 
 volumes:
   users-db-vol:
+  subscription-db-vol:
