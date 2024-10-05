@@ -10,15 +10,12 @@ pipeline {
                         }
                     }
                     steps {
-                        script{
-                            sh 'whoami'
-                        }
                         dir('auth-service') {   // This needs to be inside steps block
                             sh 'cat /etc/os-release'
                         }
                     }
                 }
-                stage('Subscription-Service') {
+/*                stage('Subscription-Service') {
                     agent {
                         docker {
                             image 'maven:3.6.3-jdk-21'
@@ -33,7 +30,7 @@ pipeline {
                             sh 'mvn --version'
                         }
                     }
-                }
+                }*/
             }
         }
     }
