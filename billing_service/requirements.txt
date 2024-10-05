@@ -1,0 +1,8 @@
+Django==5.1.1
+django-weasyprint==2.3.0
+html5lib==1.1
+pdfkit==1.0.0
+pymongo==4.8.0
+python-dotenv==1.0.1
+python-snappy==0.7.3
+weasyprint==62.3

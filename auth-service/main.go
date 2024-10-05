@@ -3,18 +3,20 @@ package main
 import (
 	"auth-service/handlers"
 	"auth-service/middleware"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 func main() {
+
+	fmt.Print("i'm working")
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	//fmt.Println(os.Getenv("KEYCLOAK_REALM"))
 
 	app := fiber.New()
 
@@ -23,9 +25,11 @@ func main() {
 	app.Post("/signup", handlers.Signup)
 	app.Post("/logout", handlers.Logout)
 
+	app.Get("/hello-world", handlers.Hello_World)
+
 	app.Get("/protected", JWTMiddleware(), handlers.Protected)
 
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(os.Getenv("SERVER_URL")))
 }
 
 // JWTMiddleware checks if the request is authenticated and authorized

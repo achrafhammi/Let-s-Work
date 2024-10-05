@@ -88,3 +88,8 @@ func Logout(c *fiber.Ctx) error {
 func Protected(c *fiber.Ctx) error {
 	return c.SendString("Access granted")
 }
+
+// testing the endpoint if server is working
+func Hello_World(c *fiber.Ctx) error{
+	return c.SendString("hello world")
+}

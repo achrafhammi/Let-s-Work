@@ -25,6 +25,19 @@ services:
     networks:
       - subscription-network
 
+  subscription-app:
+    build: ./subscription-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - subscription-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://subscription-db:5432/${DB_SUSBCRIPTION_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - subscription-network
+
   keycloak:
     image: quay.io/keycloak/keycloak
     environment:
@@ -46,10 +59,38 @@ services:
     networks:
       - users-network
 
+  auth-service-app:
+    build: ./auth-service
+    ports:
+      - "3000:3000" # Expose Go app port
+    depends_on:
+      - keycloak
+      - users-db
+    env_file:
+      - ./.env
+    networks:
+      - users-network
+
+  billing-db:
+    image: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - billing-db-vol:/data/db
+    ports:
+      - "27017:27017"
+    restart: always
+    networks:
+      - billing-network
+
+
 networks:
   users-network:
   subscription-network:
+  billing-network:
 
 volumes:
   users-db-vol:
   subscription-db-vol:
+  billing-db-vol:
