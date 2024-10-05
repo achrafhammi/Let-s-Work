@@ -10,6 +10,9 @@ pipeline {
                         }
                     }
                     steps {
+                        script{
+                            sh 'whoami'
+                        }
                         dir('auth-service') {   // This needs to be inside steps block
                             sh 'cat /etc/os-release'
                         }
@@ -22,6 +25,9 @@ pipeline {
                         }
                     }
                     steps {
+                        script{
+                            sh 'whoami'
+                        }
                         dir('subscription-service') {  // This needs to be inside steps block
                             sh 'java --version'
                             sh 'mvn --version'
