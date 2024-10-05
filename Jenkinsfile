@@ -1,30 +1,30 @@
-pipeline{
+pipeline {
     agent none
-    stages{
-        stage('Workeo CI/CD Pipeline'){
-            parallel{
-                stage("Auth-Microservice"){
+    stages {
+        stage('Workeo CI/CD Pipeline') {
+            parallel {
+                stage('Auth-Microservice') {
                     agent {
                         docker {
                             image 'alpine:latest'
                         }
-                        dir('auth-service'){
-                            steps{
-                                sh 'cat /etc/os-release'
-                            }
+                    }
+                    steps {
+                        dir('auth-service') {   // This needs to be inside steps block
+                            sh 'cat /etc/os-release'
                         }
                     }
                 }
-                stage("Subscription-Service"){
-                    agent{
-                        docker{
+                stage('Subscription-Service') {
+                    agent {
+                        docker {
                             image 'maven:3.6.3-jdk-21'
                         }
-                        dir('subscription-service'){
-                            steps{
-                                sh 'java --version'
-                                sh 'mvn --version'
-                            }
+                    }
+                    steps {
+                        dir('subscription-service') {  // This needs to be inside steps block
+                            sh 'java --version'
+                            sh 'mvn --version'
                         }
                     }
                 }
