@@ -16,7 +16,11 @@ pipeline {
                     }
                     stages {
                         stage('Setup Project'){
-                            sh 'ls'
+                            steps{
+                                dir('auth-service'){
+                                    sh 'ls'
+                                }
+                            }
                         }
                         stage('Clean up and remove unnecessary dependencies') {
                             steps {
@@ -53,7 +57,11 @@ pipeline {
                     }
                     stages {
                         stage('Setup Project'){
-                            sh 'ls'
+                            steps{
+                                dir('subscription-service'){
+                                    sh 'ls'
+                                }
+                            }
                         }
                         stage('Test & Compile') {
                             steps {
@@ -95,6 +103,13 @@ pipeline {
                             dir('billing_service'){
                                 sh 'pip-compile --output-file=requirements.txt requirements.in' 
                                 sh 'pip-sync'
+                            }
+                        }
+                        stage("install necessary dependencies"){
+                            steps {
+                                dir('billing_service') {
+                                    sh 'pip install -r requirements.txt'
+                                }
                             }
                         }
                         stage('Test') {
