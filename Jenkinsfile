@@ -8,20 +8,13 @@ pipeline {
     stages {
         stage('Workeo CI/CD Pipeline') {
             parallel {
-                /*stage('Auth-Microservice') {
+                stage('Auth-Microservice') {
                     agent {
                         docker {
                             image 'golang:latest'
                         }
                     }
                     stages {
-                        stage('Setup') {
-                            steps {
-                                dir('auth-service') {
-                                    sh 'ls'
-                                }
-                            }
-                        }
                         stage('Clean up and remove unnecessary dependencies') {
                             steps {
                                 dir('auth-service') {
@@ -36,23 +29,8 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Building Docker Image') {
-                            steps {
-                                dir('auth-service') {
-                                    sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
-                                }
-                            }
-                        }
-                        stage('Push Docker image to Docker Hub') {
-                            steps {
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
-                                }
-                            }
-                        }
                     }
-                }*/
+                }
                 stage('Subscription-Service') {
                     agent {
                         docker {
@@ -64,15 +42,7 @@ pipeline {
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
                     stages {
-                        stage('Setup') {
-                            steps {
-                                dir('subscription-service') {
-                                    sh 'pwd'
-                                    sh 'touch est.c'
-                                }
-                            }
-                        }
-                        /*stage('Test & Compile') {
+                        stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn test compile'
@@ -86,30 +56,9 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Building Docker Image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
-                            steps {
-                                dir('subscription-service') {
-                                    sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
-                                }
-                            }
-                        }
-                        /*stage('Pushing Docker image') {
-                            steps {
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
-                                }
-                            }
-                        }*/
                     }
                 }
-                /*stage('Billing-Service') {
+                stage('Billing-Service') {
                     agent {
                         docker {
                             image 'python:3.10-slim'
@@ -117,13 +66,6 @@ pipeline {
                         }
                     }
                     stages {
-                        stage('Setup') {
-                            steps {
-                                dir('billing_service') {
-                                    sh 'ls'
-                                }
-                            }
-                        }
                         stage('Test') {
                             steps {
                                 dir('billing_service') {
@@ -132,23 +74,8 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Build Docker Image') {
-                            steps {
-                                dir('billing_service') {
-                                    sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
-                                }
-                            }
-                        }
-                        stage('Push Docker image') {
-                            steps {
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push ${env.DOCKER_REPOSITORY_BILLING}:0.1"
-                                }
-                            }
-                        }
                     }
-                }*/
+                }
             }
         }
         stage("tesssti"){
@@ -158,12 +85,38 @@ pipeline {
                     args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
+
             stages{
-                stage('Build Subs'){
+                stage('Build & Push Auth Microservice Docker Image'){
+                    steps{
+                        dir('auth-service'){
+                            sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
+                            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                    sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
+                                }
+                        }
+                    }
+                }
+                stage('Build & Push Subscription Microservice Docker Image'){
                     steps{
                         dir('subscription-service'){
-                            sh 'docker ps'
-                            sh 'ls'
+                            sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
+                            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                    sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
+                                }
+                        }
+                    }
+                }
+                stage('Build & Push Billing Microservice Docker Image'){
+                    steps{
+                        dir('billing_service'){
+                            sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
+                            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                    sh "docker push ${env.DOCKER_REPOSITORY_BILLING}:0.1"
+                                }
                         }
                     }
                 }
