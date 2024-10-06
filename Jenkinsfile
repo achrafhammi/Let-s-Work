@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Workeo CI/CD Pipeline') {
             parallel {
-                stage('Auth-Microservice') {
+                /*stage('Auth-Microservice') {
                     agent {
                         docker {
                             image 'golang:latest'
@@ -52,7 +52,7 @@ pipeline {
                             }
                         }
                     }
-                }
+                }*/
                 stage('Subscription-Service') {
                     agent {
                         docker {
@@ -108,7 +108,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Billing-Service') {
+                /*stage('Billing-Service') {
                     agent {
                         docker {
                             image 'python:3.10-slim'
@@ -147,7 +147,7 @@ pipeline {
                             }
                         }
                     }
-                }
+                }*/
             }
         }
     }
