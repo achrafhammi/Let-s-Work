@@ -89,16 +89,20 @@ pipeline {
                     }
                     stages{
                         stage('Building docker image'){
-                            dir('auth-service'){
-                                sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
+                            steps{
+                                dir('auth-service'){
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
+                                }
                             }
                         }
                         stage('Pushing docker image to repo'){
-                            dir('auth-service'){
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                        sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
-                                    }
+                            steps{
+                                dir('auth-service'){
+                                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                            sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
+                                        }
+                                }
                             }
                     
                         }
@@ -113,16 +117,20 @@ pipeline {
                     }
                     stages{
                         stage("Building Docker Image"){
-                            dir('subscription-service'){
-                                sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
+                            steps{
+                                dir('subscription-service'){
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
+                                }
                             }
                         }
                         stage("Pushing Docker Image"){
-                            dir('subscription-service'){
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                        sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
-                                    }
+                            steps{
+                                dir('subscription-service'){
+                                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                            sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
+                                        }
+                                }
                             }
                         }
                     }
@@ -136,21 +144,20 @@ pipeline {
                     }
                     stages{
                         stage("Building docker image"){
-                            dir('billing_service'){
-                                sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                        sh "docker push ${env.DOCKER_REPOSITORY_BILLING}:0.1"
-                                    }
+                            steps{
+                                dir('billing_service'){
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
+                                }
                             }
                         }
                         stage("Pushing docker image"){
-                            dir('billing_service'){
-                                sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
-                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                        sh "docker push ${env.DOCKER_REPOSITORY_BILLING}:0.1"
-                                    }
+                            steps{
+                                dir('billing_service'){
+                                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                            sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                            sh "docker push ${env.DOCKER_REPOSITORY_BILLING}:0.1"
+                                        }
+                                }
                             }
                         }
                     }
