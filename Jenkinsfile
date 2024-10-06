@@ -1,7 +1,7 @@
 pipeline {
     agent none
     environment{
-        DOCKER_REPOSITORY = 'malcomer/workeo'
+        DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
     }
     stages {
         stage('Workeo CI/CD Pipeline') {
@@ -46,7 +46,7 @@ pipeline {
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
-                                    sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ." 
                                 }
                             }
                         }
@@ -54,7 +54,7 @@ pipeline {
                             steps{
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD docker.io "
-                                    sh "docker push ${env.DOCKER_REPOSITORY}/auth-service:0.1"
+                                    sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
                                 }
 
                             }
