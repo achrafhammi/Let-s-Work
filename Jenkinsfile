@@ -4,6 +4,14 @@ pipeline {
             image 'docker:latest'
             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
         }
+        docker{
+            image 'docker:latest'
+            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+        }
+        docker{
+            image 'docker:latest'
+            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+        }
     }
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
