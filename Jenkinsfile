@@ -95,7 +95,6 @@ pipeline {
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
-                                    sh 'docker ps'
                                     sh 'mvn test compile'     
                                 }
                             }
