@@ -10,18 +10,19 @@ pipeline {
                         }
                     }
                     stages {
-                        dir('auth-service') { 
-                            stage('Checkout'){
-                                steps{
+                        stage('Checkout') {
+                            steps {
+                                dir('auth-service') {
                                     checkout([
-                                            $class: 'GitSCM', 
-                                            branches: [[name: '*/main']], 
-                                            userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
-                                            extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
-                                        ])
+                                        $class: 'GitSCM',
+                                        branches: [[name: '*/main']],
+                                        userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
+                                        extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
+                                    ])
                                 }
                             }
                         }
+                        // Add more stages like build, test, etc.
                     }
                 }
 /*                stage('Subscription-Service') {
