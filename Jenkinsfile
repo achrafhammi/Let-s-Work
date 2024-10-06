@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Workeo CI/CD Pipeline') {
             parallel {
-                /*stage('Auth-Microservice') {
+                stage('Auth-Microservice') {
                     agent {
                         docker {
                             image 'golang:latest'
@@ -23,7 +23,7 @@ pipeline {
                                 dir('auth-service') {
                                     checkout([
                                         $class: "GitSCM",
-                                        branches: [[name: "-----main"]],
+                                        branches: [[name: "*/main"]],
                                         userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
                                         extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "auth-service/"]]]]
                                     ])
@@ -62,8 +62,8 @@ pipeline {
                         }
                         
                     }
-                }*/
-                /*stage('Subscription-Service') {
+                }
+                stage('Subscription-Service') {
                     agent{
                         docker{
                             image 'docker:latest'
@@ -79,7 +79,7 @@ pipeline {
                                 dir('subscription-service') {
                                     checkout([
                                         $class: "GitSCM",
-                                        branches: [[name: "-----main"]],
+                                        branches: [[name: "*/main"]],
                                         userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
                                         extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "subscription-service/"]]]]
                                     ])
@@ -128,7 +128,7 @@ pipeline {
                             }
                         }
                     }
-                }*/
+                }
                 stage("Billing-Service"){
                     agent{
                         docker{
