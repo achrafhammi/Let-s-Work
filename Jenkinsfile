@@ -23,7 +23,13 @@ pipeline {
                                 }
                             }
                         }
-                        // Add more stages like build, test, etc.
+                        stage('Test') {
+                            steps {
+                                dir('auth-service') {
+                                    sh 'go test ./...' 
+                                }
+                            }
+                        }
                     }
                 }
 /*                stage('Subscription-Service') {
