@@ -66,14 +66,15 @@ pipeline {
                     agent {
                         docker {
                             image 'maven:3.9.9-amazoncorretto-21'
-                            image 'docker:latest'
-                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                            args '-v /var/jenkins_home/.m2:/root/.m2'
+                            //image 'docker:latest'
+                            //args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
                     stages{
                         stage('Checkout') {
                             steps {
-                                dir('auth-service') {
+                                dir('subscription-service') {
                                     checkout([
                                         $class: "GitSCM",
                                         branches: [[name: "*/main"]],
@@ -86,7 +87,9 @@ pipeline {
                         stage('Clean up and remove unnecessary dependences'){
                             steps{
                                 dir('subscription-service'){
-                                    sh 'mvn clean'
+                                    withEnv(['MAVEN_OPTS=-Dmaven.repo.local=/var/jenkins_home/.m2/repository']) {
+                                        sh 'mvn clean'
+                                    }
                                 }
                             }
                         }
