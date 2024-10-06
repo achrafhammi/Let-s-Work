@@ -10,13 +10,13 @@ pipeline {
         DOCKER_REPOSITORY_BILLING = 'workeo/billing-service'
     }
     stages {
-        stage('Checkout Repository') {
+        /*stage('Checkout Repository') {
             steps {
                 // Clone the entire repository to a temporary location
                 dir('workspace') {
                     checkout([
                         $class: "GitSCM",
-                        branches: [[name: "*/main"]],
+                        branches: [[name: "main"]],
                         userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
                     ])
                 }
@@ -30,7 +30,7 @@ pipeline {
                 //sh 'mv workspace/billing_service ./'
                 sh 'ls'
             }
-        }
+        }*/
         stage('Workeo CI/CD Pipeline') {
             parallel {
                 stage('Auth-Microservice') {
