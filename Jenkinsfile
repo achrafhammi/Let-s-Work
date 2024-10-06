@@ -85,27 +85,17 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Clean up and remove unnecessary dependences'){
+                        /*stage('Clean up and remove unnecessary dependences'){
                             steps{
                                 dir('subscription-service'){
                                     sh 'mvn clean'
                                 }
                             }
-                        }
+                        }*/
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
-                                    // Build and run Docker Compose
-                                    sh 'docker-compose up -d --build'
-                                    
-                                    // Wait for the app to be ready, adjust sleep time as needed
-                                    sh 'sleep 30'
-
-                                    // Run Maven tests
-                                    sh 'mvn test'
-                                    
-                                    // Stop Docker Compose services
-                                    sh 'docker-compose down'    
+                                    sh 'mvn test compile'     
                                 }
                             }
                         }
