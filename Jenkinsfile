@@ -42,14 +42,14 @@ pipeline {
                                     sh 'GOCACHE=/tmp/go-cache go test ./...' 
                                 }
                             }
-                        }*/
+                        }
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ." 
                                 }
                             }
-                        }
+                        }*/
                         stage('Push Docker image to docker hub'){
                             steps{
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
