@@ -10,12 +10,12 @@ pipeline {
                         }
                     }
                     stages {
-                        stage('Checkout') {
+/*                        stage('Checkout') {
                             steps {
                                 dir('auth-service') {
                                     checkout([
                                         $class: 'GitSCM',
-                                        branches: [[name: '*/main']],
+                                        branches: [[name: '--------main']],
                                         userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
                                         extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
                                     ])
@@ -26,7 +26,7 @@ pipeline {
                         stage('Clean up and remove unnecessary dependences'){
                             steps{
                                 dir('auth-service'){
-                                    sh 'go mod tidy'
+                                    sh 'GOCACHE=/tmp/go-cache go mod tidy'
                                 }
                             }
                         }
@@ -37,6 +37,23 @@ pipeline {
                                 }
                             }
                         }
+                        stage('Building Docker Image') {
+                            steps {
+                                dir('auth-service') {
+                                    sh 'docker build -t malcomer/workeo/auth-service:0.1 .' 
+                                }
+                            }
+                        }*/
+                        stage('Push Docker image to docker hub'){
+                            steps{
+                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                    sh 'echo $DOCKER_PASSWORD'
+                                    sh 'echo $DOCKER_USERNAME'
+                                }
+
+                            }
+                        }
+                        
                     }
                 }
 /*                stage('Subscription-Service') {
