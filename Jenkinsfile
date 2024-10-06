@@ -67,7 +67,8 @@ pipeline {
                         stage('Setup') {
                             steps {
                                 dir('subscription-service') {
-                                    sh 'ls'
+                                    sh 'pwd'
+                                    sh 'touch est.c'
                                 }
                             }
                         }
@@ -152,7 +153,7 @@ pipeline {
                 }
             }
             steps{
-                sh 'ls'
+                sh 'ls '
             }
         }
     }
