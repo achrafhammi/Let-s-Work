@@ -44,6 +44,7 @@ pipeline {
                             steps {
                                 dir('auth-service') {
                                     sh 'whoami'
+                                    sh 'docker ps'
                                     //sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
                                 }
                             }
