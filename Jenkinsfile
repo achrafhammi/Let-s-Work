@@ -19,6 +19,7 @@ pipeline {
                                         userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
                                         extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
                                     ])
+                                    sh 'ls'
                                 }
                             }
                         }
