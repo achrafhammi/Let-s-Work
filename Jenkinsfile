@@ -3,7 +3,7 @@ pipeline {
     environment{
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
-        DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/billing-service'
+        DOCKER_REPOSITORY_BILLING = 'workeo/billing-service'
     }
     stages {
         stage('Workeo CI/CD Pipeline') {
