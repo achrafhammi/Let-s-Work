@@ -12,8 +12,6 @@ pipeline {
                     agent {
                         docker {
                             image 'golang:latest'
-                            image 'docker:latest'
-                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
                     stages {
@@ -39,6 +37,12 @@ pipeline {
                             }
                         }
                         stage('Building Docker Image') {
+                            agent{
+                                docker{
+                                    image 'docker:latest'
+                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                                }
+                            }
                             steps {
                                 dir('auth-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
@@ -59,7 +63,6 @@ pipeline {
                     agent {
                         docker {
                             image 'maven:3.9.9-amazoncorretto-21'
-                            image 'docker:latest'
                             args '-u root -v /var/jenkins_home/.m2:/root/.m2'
                         }
                     }
@@ -109,7 +112,6 @@ pipeline {
                     agent {
                         docker {
                             image 'python:3.10-slim'
-                            image 'docker:latest'
                             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
