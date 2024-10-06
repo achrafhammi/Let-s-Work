@@ -23,6 +23,9 @@ pipeline {
                                 }
                             }
                         }
+                        stage('Clean up and remove unnecessary dependences'){
+                            sh 'pwd'
+                        }
                         stage('Test') {
                             steps {
                                 dir('auth-service') {
