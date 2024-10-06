@@ -67,8 +67,6 @@ pipeline {
                         docker {
                             image 'maven:3.9.9-amazoncorretto-21'
                             args '-v /var/jenkins_home/.m2:/root/.m2'
-                            image 'docker:latest'
-                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
                     environment{
@@ -95,6 +93,12 @@ pipeline {
                             }
                         }
                         stage('Test & Compile') {
+                            agent{
+                                docker{        
+                                    image 'docker:latest'
+                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                                }
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'docker ps'
