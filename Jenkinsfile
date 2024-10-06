@@ -25,7 +25,8 @@ pipeline {
                         }
                         stage('Clean up and remove unnecessary dependences'){
                             steps{
-                                sh 'pwd'
+                                sh 'ls'
+                                sh 'go mod tidy'
                             }
                         }
                         stage('Test') {
