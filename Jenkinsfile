@@ -46,8 +46,7 @@ pipeline {
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
-                                    sh 'docker ps'
-                                    //sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
                                 }
                             }
                         }
