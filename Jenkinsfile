@@ -1,5 +1,11 @@
 pipeline {
-    agent none // No global agent, we'll specify agent per stage
+    agent {
+        docker{
+            image 'docker:latest'
+            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+
+        }
+    } // No global agent, we'll specify agent per stage
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
@@ -38,12 +44,6 @@ pipeline {
                             }
                         }
                         stage('Building Docker Image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
                             steps {
                                 dir('auth-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
@@ -51,12 +51,6 @@ pipeline {
                             }
                         }
                         stage('Push Docker image to Docker Hub') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
                             steps {
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
@@ -99,12 +93,6 @@ pipeline {
                             }
                         }
                         stage('Building Docker Image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
                             steps {
                                 dir('subscription-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
@@ -112,12 +100,6 @@ pipeline {
                             }
                         }
                         stage('Pushing Docker image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
                             steps {
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
@@ -151,12 +133,6 @@ pipeline {
                             }
                         }
                         stage('Build Docker Image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
                             steps {
                                 dir('billing_service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
@@ -164,12 +140,6 @@ pipeline {
                             }
                         }
                         stage('Push Docker image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
                             steps {
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
