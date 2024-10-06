@@ -158,8 +158,14 @@ pipeline {
                     args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                 }
             }
-            steps{
-                sh 'docker ps'
+            stages{
+                stage('Build Subs'){
+                    steps{
+                        dir('subscription-service'){
+                            sh 'docker ps'
+                        }
+                    }
+                }
             }
         }
     }
