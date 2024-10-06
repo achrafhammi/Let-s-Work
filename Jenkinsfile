@@ -9,15 +9,17 @@ pipeline {
                             image 'alpine:latest'
                         }
                     }
-                    steps {
+                    stages {
                         dir('auth-service') { 
                             stage('Checkout'){
-                                checkout([
-                                        $class: 'GitSCM', 
-                                        branches: [[name: '*/main']], 
-                                        userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
-                                        extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
-                                    ])
+                                steps{
+                                    checkout([
+                                            $class: 'GitSCM', 
+                                            branches: [[name: '*/main']], 
+                                            userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
+                                            extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
+                                        ])
+                                }
                             }
                         }
                     }
