@@ -10,12 +10,19 @@ pipeline {
                         }
                     }
                     steps {
-                        dir('auth-service') {   // This needs to be inside steps block
-                            sh 'cat /etc/os-release'
+                        dir('auth-service') { 
+                            stage('Checkout'){
+                                checkout([
+                                        $class: 'GitSCM', 
+                                        branches: [[name: '*/main']], 
+                                        userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
+                                        extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
+                                    ])
+                            }
                         }
                     }
                 }
-                stage('Subscription-Service') {
+/*                stage('Subscription-Service') {
                     agent {
                         docker {
                             image 'maven:3.9.9-amazoncorretto-21'
@@ -27,7 +34,7 @@ pipeline {
                             sh 'mvn --version'
                         }
                     }
-                }
+                }*/
             }
         }
     }
