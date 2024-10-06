@@ -1,5 +1,8 @@
 pipeline {
     agent none
+    environment{
+        DOCKER_REPOSITORY = 'malcomer/workeo'
+    }
     stages {
         stage('Workeo CI/CD Pipeline') {
             parallel {
@@ -10,12 +13,12 @@ pipeline {
                         }
                     }
                     stages {
-/*                        stage('Checkout') {
+                        stage('Checkout') {
                             steps {
                                 dir('auth-service') {
                                     checkout([
                                         $class: 'GitSCM',
-                                        branches: [[name: '--------main']],
+                                        branches: [[name: '*/main']],
                                         userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
                                         extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
                                     ])
@@ -40,15 +43,15 @@ pipeline {
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
-                                    sh 'docker build -t malcomer/workeo/auth-service:0.1 .' 
+                                    sh 'docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 .' 
                                 }
                             }
-                        }*/
+                        }
                         stage('Push Docker image to docker hub'){
                             steps{
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                    sh 'echo $DOCKER_PASSWORD'
-                                    sh 'echo $DOCKER_USERNAME'
+                                    sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                                    sh 'docker push -t ${env.DOCKER_REPOSITORY}/auth-service:0.1'
                                 }
 
                             }
