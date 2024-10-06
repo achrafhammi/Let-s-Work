@@ -1,5 +1,9 @@
 pipeline {
-    agent none
+    agent {
+        docker {
+            image 'alpine:latest'
+        }
+    }
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
@@ -7,12 +11,6 @@ pipeline {
     }
     stages {
         stage('Checkout Repository') {
-            agent {
-                docker {
-                    image 'docker:latest'
-                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
             steps {
                 // Clone the entire repository to a temporary location
                 dir('workspace') {
@@ -86,12 +84,18 @@ pipeline {
                 stage('Subscription-Service') {
                     agent {
                         docker {
-                            image 'maven:3.9.9-amazoncorretto-21'
-                            args '-v /var/jenkins_home/.m2:/root/.m2'
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
                     stages {
                         stage('Test & Compile') {
+                            agent{
+                                docker {
+                                    image 'maven:3.9.9-amazoncorretto-21'
+                                    args '-v /var/jenkins_home/.m2:/root/.m2'
+                                }
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn test compile'
@@ -99,6 +103,12 @@ pipeline {
                             }
                         }
                         stage('Clean up & Packaging .jar') {
+                            agent{
+                                docker {
+                                    image 'maven:3.9.9-amazoncorretto-21'
+                                    args '-v /var/jenkins_home/.m2:/root/.m2'
+                                }
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn clean package'
@@ -125,11 +135,17 @@ pipeline {
                 stage("Billing-Service") {
                     agent {
                         docker {
-                            image 'python:3.10-slim'
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
                     stages {
                         stage('Test') {
+                            agent{
+                                docker {
+                                    image 'python:3.10-slim'
+                                }
+                            }
                             steps {
                                 dir('billing_service') {
                                     sh 'pip install -r requirements.txt'
