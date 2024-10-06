@@ -163,6 +163,7 @@ pipeline {
                     steps{
                         dir('subscription-service'){
                             sh 'docker ps'
+                            sh 'ls'
                         }
                     }
                 }
