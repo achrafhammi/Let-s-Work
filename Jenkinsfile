@@ -3,6 +3,7 @@ pipeline {
     environment{
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
+        DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/billing-service'
     }
     stages {
         stage('Workeo CI/CD Pipeline') {
@@ -159,6 +160,21 @@ pipeline {
                                     sh 'pip install -r requirements.txt'
                                     sh 'python manage.py test'
                                 }
+                            }
+                        }
+                        stage("Build Docker image"){
+                            steps{
+                                dir('billing_service'){
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
+                                }
+                            }
+                        }
+                        stage("Push Docker image"){
+                            steps{
+                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                        sh "docker push ${env.DOCKER_REPOSITORY_BILLING}:0.1"
+                                    }
                             }
                         }
                     }
