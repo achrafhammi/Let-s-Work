@@ -3,7 +3,6 @@ pipeline {
         docker{
             image 'docker:latest'
             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-
         }
     } // No global agent, we'll specify agent per stage
     environment {
@@ -18,6 +17,7 @@ pipeline {
                     agent {
                         docker {
                             image 'golang:latest'
+                            image 'docker:latest'
                             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
@@ -64,6 +64,7 @@ pipeline {
                     agent {
                         docker {
                             image 'maven:3.9.9-amazoncorretto-21'
+                            image 'docker:latest'
                             args '-u root -v /var/jenkins_home/.m2:/root/.m2'
                         }
                     }
@@ -113,6 +114,7 @@ pipeline {
                     agent {
                         docker {
                             image 'python:3.10-slim'
+                            image 'docker:latest'
                             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
