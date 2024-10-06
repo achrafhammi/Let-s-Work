@@ -26,7 +26,7 @@ pipeline {
                         stage('Test') {
                             steps {
                                 dir('auth-service') {
-                                    sh 'go test ./...' 
+                                    sh 'GOCACHE=/tmp/go-cache go test ./...' 
                                 }
                             }
                         }
