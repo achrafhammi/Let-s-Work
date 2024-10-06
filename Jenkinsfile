@@ -1,5 +1,10 @@
 pipeline {
-    agent none
+    agent {
+        docker {
+            image 'docker:latest'
+            args '-u root'
+        }
+    }
     environment{
         DOCKER_REPOSITORY = 'malcomer/workeo'
     }
