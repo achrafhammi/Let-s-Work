@@ -62,7 +62,7 @@ pipeline {
                         
                     }
                 }*/
-                stage('Subscription-Service') {
+                /*stage('Subscription-Service') {
                     agent{
                         docker{
                             image 'docker:latest'
@@ -78,7 +78,7 @@ pipeline {
                                 dir('subscription-service') {
                                     checkout([
                                         $class: "GitSCM",
-                                        branches: [[name: "*/main"]],
+                                        branches: [[name: "-----main"]],
                                         userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
                                         extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "subscription-service/"]]]]
                                     ])
@@ -122,8 +122,36 @@ pipeline {
                             steps {    
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                        sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
+                                        sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
                                     }
+                            }
+                        }
+                    }
+                }*/
+                stage("Billing-Service"){
+                    stages{
+                        stage('Checkout') {
+                            steps {
+                                dir('billing_service') {
+                                    checkout([
+                                        $class: "GitSCM",
+                                        branches: [[name: "*/main"]],
+                                        userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
+                                        extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "billing_service/"]]]]
+                                    ])
+                                }
+                            }
+                        }
+                        stage('Test'){
+                            agent{
+                                docker{
+                                    image 'python:3.10-slim'
+                                }
+                            }
+                            steps{
+                                dir('billing_service'){
+                                    sh 'python manage.py test'
+                                }
                             }
                         }
                     }
