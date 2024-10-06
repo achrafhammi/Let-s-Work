@@ -156,6 +156,7 @@ pipeline {
                             }
                             steps{
                                 dir('billing_service'){
+                                    sh 'pip install -r requirements.txt'
                                     sh 'python manage.py test'
                                 }
                             }
