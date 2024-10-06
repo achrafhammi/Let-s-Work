@@ -1,5 +1,5 @@
 pipeline {
-    agent none // No global agent, we'll specify agent per stage
+    agent none 
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
@@ -7,12 +7,6 @@ pipeline {
     }
     stages {
         stage('Workeo CI/CD Pipeline') {
-            agent{
-                docker{
-                    image 'docker:latest'
-                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
             parallel {
                 stage('Auth-Microservice') {
                     agent {
@@ -21,11 +15,6 @@ pipeline {
                         }
                     }
                     stages {
-                        stage("test"){
-                            steps{
-                                sh 'docker ps'
-                            }
-                        }
                         stage('Clean up and remove unnecessary dependencies') {
                             steps {
                                 dir('auth-service') {
@@ -53,11 +42,6 @@ pipeline {
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
                     stages {
-                        stage("test"){
-                            steps{
-                                sh 'docker ps'
-                            }
-                        }
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
@@ -82,11 +66,6 @@ pipeline {
                         }
                     }
                     stages {
-                        stage("test"){
-                            steps{
-                                sh 'docker ps'
-                            }
-                        }
                         stage('Test') {
                             steps {
                                 dir('billing_service') {
@@ -100,15 +79,14 @@ pipeline {
             }
         }
         stage("Build & Push Docker Images"){
-            agent{
-                docker{
-                    image 'docker:latest'
-                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
-
-            stages{
+            parallel{
                 stage('Build & Push Auth Microservice Docker Image'){
+                    agent{
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        }
+                    }
                     steps{
                         dir('auth-service'){
                             sh "docker build -t ${env.DOCKER_REPOSITORY_AUTH}:0.1 ."
@@ -120,6 +98,12 @@ pipeline {
                     }
                 }
                 stage('Build & Push Subscription Microservice Docker Image'){
+                    agent{
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        }
+                    }
                     steps{
                         dir('subscription-service'){
                             sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
@@ -131,6 +115,12 @@ pipeline {
                     }
                 }
                 stage('Build & Push Billing Microservice Docker Image'){
+                    agent{
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        }
+                    }
                     steps{
                         dir('billing_service'){
                             sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
