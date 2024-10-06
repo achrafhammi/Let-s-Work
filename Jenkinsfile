@@ -63,12 +63,7 @@ pipeline {
                     }
                 }*/
                 stage('Subscription-Service') {
-                    agent {
-                        docker {
-                            image 'maven:3.9.9-amazoncorretto-21'
-                            args '-v /var/jenkins_home/.m2:/root/.m2'
-                        }
-                    }
+                    agent none
                     environment{
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
@@ -85,21 +80,26 @@ pipeline {
                                 }
                             }
                         }
-                        /*stage('Clean up and remove unnecessary dependences'){
-                            steps{
-                                dir('subscription-service'){
-                                    sh 'mvn clean'
+                        stage('Test & Compile') {
+                            agent{
+                                docker {
+                                    image 'maven:3.9.9-amazoncorretto-21'
+                                    args '-v /var/jenkins_home/.m2:/root/.m2'
                                 }
                             }
-                        }*/
-                        stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn test compile'     
                                 }
                             }
                         }
-                        stage('Packaging .jar') {
+                        stage('Clean up & Packaging .jar') {
+                            agent{
+                                docker {
+                                    image 'maven:3.9.9-amazoncorretto-21'
+                                    args '-v /var/jenkins_home/.m2:/root/.m2'
+                                }
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn clean package'
@@ -107,6 +107,10 @@ pipeline {
                             }
                         }
                         stage('Building docker image') {
+                            agent{
+                                image 'docker:latest'
+                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
@@ -114,6 +118,10 @@ pipeline {
                             }
                         }
                         stage('Pushing docker image') {
+                            agent{
+                                image 'docker:latest'
+                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                            }
                             steps {    
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                         sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
