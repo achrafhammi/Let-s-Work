@@ -70,7 +70,7 @@ pipeline {
                     agent {
                         docker {
                             image 'maven:3.9.9-amazoncorretto-21'
-                            args '-v /var/jenkins_home/.m2:/root/.m2'
+                            args '-u root -v /var/jenkins_home/.m2:/root/.m2'
                         }
                     }
                     environment{
