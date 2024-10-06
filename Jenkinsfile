@@ -13,12 +13,12 @@ pipeline {
                         }
                     }
                     stages {
-                        /*stage('Checkout') {
+                        stage('Checkout') {
                             steps {
                                 dir('auth-service') {
                                     checkout([
                                         $class: "GitSCM",
-                                        branches: [[name: "-----main"]],
+                                        branches: [[name: "*/main"]],
                                         userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
                                         extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "auth-service/"]]]]
                                     ])
@@ -39,11 +39,10 @@ pipeline {
                                     sh 'GOCACHE=/tmp/go-cache go test ./...' 
                                 }
                             }
-                        }*/
+                        }
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
-                                    sh "echo ${env.DOCKER_REPOSITORY}--------------------------------"
                                     sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
                                 }
                             }
