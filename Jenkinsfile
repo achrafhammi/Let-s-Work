@@ -1,66 +1,39 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent none
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
         DOCKER_REPOSITORY_BILLING = 'workeo/billing-service'
     }
     stages {
-        /*stage('Checkout Repository') {
-            steps {
-                // Clone the entire repository to a temporary location
-                dir('workspace') {
-                    checkout([
-                        $class: "GitSCM",
-                        branches: [[name: "main"]],
-                        userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
-                    ])
-                }
-            }
-        }
-        stage('Distribute Services') {
-            steps {
-                // Move the relevant directories to their respective locations
-                //sh 'mv workspace/auth-service ./'
-                //sh 'mv workspace/subscription-service ./'
-                //sh 'mv workspace/billing_service ./'
-                sh 'ls'
-            }
-        }*/
         stage('Workeo CI/CD Pipeline') {
             parallel {
                 stage('Auth-Microservice') {
                     agent {
                         docker {
-                            image 'docker:latest'
-                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                            image 'golang:latest'
                         }
                     }
                     stages {
-                        stage('Clean up and remove unnecessary dependencies') {
-                            agent {
-                                docker {
-                                    image 'golang:latest'
+                        stage('Setup') {
+                            steps {
+                                // Implicitly clones the repo when the first step runs
+                                script {
+                                    dir('auth-service') {
+                                        // Optional: confirm that you're in the right directory
+                                        sh 'ls'
+                                    }
                                 }
                             }
+                        }
+                        stage('Clean up and remove unnecessary dependencies') {
                             steps {
                                 dir('auth-service') {
-                                    sh 'ls'
                                     sh 'GOCACHE=/tmp/go-cache go mod tidy'
                                 }
                             }
                         }
                         stage('Test') {
-                            agent {
-                                docker {
-                                    image 'golang:latest'
-                                }
-                            }
                             steps {
                                 dir('auth-service') {
                                     sh 'GOCACHE=/tmp/go-cache go test ./...'
@@ -74,7 +47,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Push Docker image to docker hub') {
+                        stage('Push Docker image to Docker Hub') {
                             steps {
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
@@ -87,18 +60,22 @@ pipeline {
                 stage('Subscription-Service') {
                     agent {
                         docker {
-                            image 'docker:latest'
-                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                            image 'maven:3.9.9-amazoncorretto-21'
+                            args '-v /var/jenkins_home/.m2:/root/.m2'
                         }
                     }
                     stages {
-                        stage('Test & Compile') {
-                            agent{
-                                docker {
-                                    image 'maven:3.9.9-amazoncorretto-21'
-                                    args '-v /var/jenkins_home/.m2:/root/.m2'
+                        stage('Setup') {
+                            steps {
+                                script {
+                                    dir('subscription-service') {
+                                        // Optional: confirm that you're in the right directory
+                                        sh 'ls'
+                                    }
                                 }
                             }
+                        }
+                        stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn test compile'
@@ -106,26 +83,20 @@ pipeline {
                             }
                         }
                         stage('Clean up & Packaging .jar') {
-                            agent{
-                                docker {
-                                    image 'maven:3.9.9-amazoncorretto-21'
-                                    args '-v /var/jenkins_home/.m2:/root/.m2'
-                                }
-                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn clean package'
                                 }
                             }
                         }
-                        stage('Building Docker image') {
+                        stage('Building Docker Image') {
                             steps {
                                 dir('subscription-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
                                 }
                             }
                         }
-                        stage('Pushing docker image') {
+                        stage('Pushing Docker image') {
                             steps {
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
@@ -135,20 +106,24 @@ pipeline {
                         }
                     }
                 }
-                stage("Billing-Service") {
+                stage('Billing-Service') {
                     agent {
                         docker {
-                            image 'docker:latest'
-                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                            image 'python:3.10-slim'
                         }
                     }
                     stages {
-                        stage('Test') {
-                            agent{
-                                docker {
-                                    image 'python:3.10-slim'
+                        stage('Setup') {
+                            steps {
+                                script {
+                                    dir('billing_service') {
+                                        // Optional: confirm that you're in the right directory
+                                        sh 'ls'
+                                    }
                                 }
                             }
+                        }
+                        stage('Test') {
                             steps {
                                 dir('billing_service') {
                                     sh 'pip install -r requirements.txt'
@@ -156,14 +131,14 @@ pipeline {
                                 }
                             }
                         }
-                        stage("Build Docker image") {
+                        stage('Build Docker Image') {
                             steps {
                                 dir('billing_service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_BILLING}:0.1 ."
                                 }
                             }
                         }
-                        stage("Push Docker image") {
+                        stage('Push Docker image') {
                             steps {
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
