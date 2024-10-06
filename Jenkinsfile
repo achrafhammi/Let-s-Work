@@ -85,13 +85,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Building Docker Image') {
-                            agent{
-                                docker{
-                                    image 'docker:latest'
-                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                                }
-                            }
+                        /*stage('Building Docker Image') {
                             steps {
                                 dir('subscription-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
@@ -105,7 +99,7 @@ pipeline {
                                     sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
                 /*stage('Billing-Service') {
@@ -148,6 +142,11 @@ pipeline {
                         }
                     }
                 }*/
+            }
+        }
+        stage("tesssti"){
+            steps{
+                sh 'ls'
             }
         }
     }
