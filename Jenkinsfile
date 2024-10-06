@@ -85,14 +85,14 @@ pipeline {
                                     sh 'mvn clean package'
                                 }
                             }
-                        }*/
-                        stage('Building Docker Image') {
-                        agent{
-                            docker{
-                                image 'docker:latest'
-                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-                            }
                         }
+                        stage('Building Docker Image') {
+                            agent{
+                                docker{
+                                    image 'docker:latest'
+                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                                }
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
@@ -152,9 +152,14 @@ pipeline {
             }
         }
         stage("tesssti"){
-            
+            agent{
+                docker{
+                    image 'docker:latest'
+                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps{
-                sh 'ls subscription-service'
+                sh 'docker ps'
             }
         }
     }
