@@ -63,7 +63,6 @@ pipeline {
                     }
                 }*/
                 stage('Subscription-Service') {
-                    agent none
                     environment{
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
