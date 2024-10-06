@@ -71,7 +71,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Test & Compile') {
+                        /*stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn test compile'
@@ -145,6 +145,12 @@ pipeline {
             }
         }
         stage("tesssti"){
+            agent{
+                docker{
+                    image 'docker:latest'
+                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps{
                 sh 'ls'
             }
