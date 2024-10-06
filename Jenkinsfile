@@ -129,6 +129,12 @@ pipeline {
                     }
                 }*/
                 stage("Billing-Service"){
+                    agent{
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        }
+                    }
                     stages{
                         stage('Checkout') {
                             steps {
