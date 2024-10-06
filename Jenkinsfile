@@ -13,21 +13,28 @@ pipeline {
                         stage('Checkout') {
                             steps {
                                 dir('auth-service') {
-                                    sh 'git clone https://github.com/achrafhammi/Let-s-Work.git /tmp/let-s-work'
-                                    sh 'mv /tmp/let-s-work/auth-service .'
-                                    sh 'rm -rf /tmp/let-s-work'
+                                    checkout([
+                                        $class: 'GitSCM',
+                                        branches: [[name: '*/main']],
+                                        userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
+                                        extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
+                                    ])
+                                    sh 'ls'
                                 }
                             }
                         }
                         stage('Clean up and remove unnecessary dependences'){
                             steps{
-                                sh 'ls'
-                                sh 'go mod tidy'
+                                dir('auth-service'){
+                                    sh 'go mod tidy'
+                                }
                             }
                         }
                         stage('Test') {
                             steps {
-                                sh 'GOCACHE=/tmp/go-cache go test ./...' 
+                                dir('auth-service') {
+                                    sh 'GOCACHE=/tmp/go-cache go test ./...' 
+                                }
                             }
                         }
                     }
