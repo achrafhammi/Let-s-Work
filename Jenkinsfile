@@ -6,7 +6,7 @@ pipeline {
                 stage('Auth-Microservice') {
                     agent {
                         docker {
-                            image 'alpine:latest'
+                            image 'golang:latest'
                         }
                     }
                     stages {
