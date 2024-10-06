@@ -70,52 +70,54 @@ pipeline {
                             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
-                    stage('Checkout') {
-                        steps {
-                            dir('auth-service') {
-                                checkout([
-                                    $class: "GitSCM",
-                                    branches: [[name: "*/main"]],
-                                    userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
-                                    extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "subscription-service/"]]]]
-                                ])
-                            }
-                        }
-                    }
-                    stage('Clean up and remove unnecessary dependences'){
-                        steps{
-                            dir('subscription-service'){
-                                sh 'mvn clean'
-                            }
-                        }
-                    }
-                    stage('Test & Compile') {
-                        steps {
-                            dir('subscription-service') {
-                                sh 'mvn test compile' 
-                            }
-                        }
-                    }
-                    stage('Packaging .jar') {
-                        steps {
-                            dir('subscription-service') {
-                                sh 'mvn clean package'
-                            }
-                        }
-                    }
-                    stage('Building docker image') {
-                        steps {
-                            dir('subscription-service') {
-                                sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
-                            }
-                        }
-                    }
-                    stage('Pushing docker image') {
-                        steps {    
-                            withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
+                    stages{
+                        stage('Checkout') {
+                            steps {
+                                dir('auth-service') {
+                                    checkout([
+                                        $class: "GitSCM",
+                                        branches: [[name: "*/main"]],
+                                        userRemoteConfigs: [[url: "https://github.com/achrafhammi/Let-s-Work.git"]],
+                                        extensions: [[$class: "SparseCheckoutPaths", sparseCheckoutPaths: [[path: "subscription-service/"]]]]
+                                    ])
                                 }
+                            }
+                        }
+                        stage('Clean up and remove unnecessary dependences'){
+                            steps{
+                                dir('subscription-service'){
+                                    sh 'mvn clean'
+                                }
+                            }
+                        }
+                        stage('Test & Compile') {
+                            steps {
+                                dir('subscription-service') {
+                                    sh 'mvn test compile' 
+                                }
+                            }
+                        }
+                        stage('Packaging .jar') {
+                            steps {
+                                dir('subscription-service') {
+                                    sh 'mvn clean package'
+                                }
+                            }
+                        }
+                        stage('Building docker image') {
+                            steps {
+                                dir('subscription-service') {
+                                    sh "docker build -t ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1 ."
+                                }
+                            }
+                        }
+                        stage('Pushing docker image') {
+                            steps {    
+                                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                        sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
+                                    }
+                            }
                         }
                     }
                 }
