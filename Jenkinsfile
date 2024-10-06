@@ -11,7 +11,6 @@ pipeline {
                 stage('Auth-Microservice') {
                     agent {
                         docker {
-                            image 'golang:latest'
                             image 'docker:latest'
                             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
 
@@ -31,6 +30,11 @@ pipeline {
                             }
                         }
                         stage('Clean up and remove unnecessary dependences'){
+                            agent{
+                                docker{
+                                    image 'golang:latest'
+                                }
+                            }
                             steps{
                                 dir('auth-service'){
                                     sh 'GOCACHE=/tmp/go-cache go mod tidy'
@@ -38,6 +42,11 @@ pipeline {
                             }
                         }
                         stage('Test') {
+                            agent{
+                                docker{
+                                    image 'golang:latest'
+                                }
+                            }
                             steps {
                                 dir('auth-service') {
                                     sh 'GOCACHE=/tmp/go-cache go test ./...' 
