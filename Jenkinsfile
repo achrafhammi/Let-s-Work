@@ -15,10 +15,20 @@ pipeline {
                         }
                     }
                     stages {
+                        stage('Setup Project'){
+                            sh 'ls'
+                        }
                         stage('Clean up and remove unnecessary dependencies') {
                             steps {
                                 dir('auth-service') {
                                     sh 'GOCACHE=/tmp/go-cache go mod tidy'
+                                }
+                            }
+                        }
+                        stage("Install necessary dependencies"){
+                            steps{
+                                dir('aut-service'){
+                                    sh 'GOCACHE=/tmp/go-cache go mod download'
                                 }
                             }
                         }
@@ -42,6 +52,9 @@ pipeline {
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
                     stages {
+                        stage('Setup Project'){
+                            sh 'ls'
+                        }
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
@@ -66,6 +79,24 @@ pipeline {
                         }
                     }
                     stages {
+                        stage('Setup Project'){
+                            steps{
+                                dir('billing_service'){
+                                    sh 'ls'
+                                }
+                            }
+                        }
+                        stage('Install pip-tools'){
+                            dir('billing_service'){
+                                sh 'pip install pip-tools'
+                            }
+                        }
+                        stage('Clean up and Sync dependencies'){
+                            dir('billing_service'){
+                                sh 'pip-compile --output-file=requirements.txt requirements.in' 
+                                sh 'pip-sync'
+                            }
+                        }
                         stage('Test') {
                             steps {
                                 dir('billing_service') {
