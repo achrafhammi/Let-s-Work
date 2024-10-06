@@ -95,7 +95,17 @@ pipeline {
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
-                                    sh 'mvn test compile'     
+                                    // Build and run Docker Compose
+                                    sh 'docker-compose up -d --build'
+                                    
+                                    // Wait for the app to be ready, adjust sleep time as needed
+                                    sh 'sleep 30'
+
+                                    // Run Maven tests
+                                    sh 'mvn test'
+                                    
+                                    // Stop Docker Compose services
+                                    sh 'docker-compose down'    
                                 }
                             }
                         }
