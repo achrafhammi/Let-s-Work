@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'docker:latest'
-            args '-u root'
-        }
-    }
+    agent none
     environment{
         DOCKER_REPOSITORY = 'malcomer/workeo'
     }
@@ -15,6 +10,9 @@ pipeline {
                     agent {
                         docker {
                             image 'golang:latest'
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+
                         }
                     }
                     stages {
