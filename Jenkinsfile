@@ -26,7 +26,7 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Clean up and remove unnecessary dependences'){
+                        /*stage('Clean up and remove unnecessary dependences'){
                             steps{
                                 dir('auth-service'){
                                     sh 'GOCACHE=/tmp/go-cache go mod tidy'
@@ -39,11 +39,12 @@ pipeline {
                                     sh 'GOCACHE=/tmp/go-cache go test ./...' 
                                 }
                             }
-                        }
+                        }*/
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
-                                    sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
+                                    sh 'whoami'
+                                    //sh "docker build -t ${env.DOCKER_REPOSITORY}/auth-service:0.1 ." 
                                 }
                             }
                         }
