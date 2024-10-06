@@ -7,6 +7,12 @@ pipeline {
     }
     stages {
         stage('Workeo CI/CD Pipeline') {
+            agent{
+                docker{
+                    image 'docker:latest'
+                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             parallel {
                 stage('Auth-Microservice') {
                     agent {
@@ -15,6 +21,11 @@ pipeline {
                         }
                     }
                     stages {
+                        stage("test"){
+                            steps{
+                                sh 'docker ps'
+                            }
+                        }
                         stage('Clean up and remove unnecessary dependencies') {
                             steps {
                                 dir('auth-service') {
@@ -42,6 +53,11 @@ pipeline {
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
                     stages {
+                        stage("test"){
+                            steps{
+                                sh 'docker ps'
+                            }
+                        }
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
@@ -66,6 +82,11 @@ pipeline {
                         }
                     }
                     stages {
+                        stage("test"){
+                            steps{
+                                sh 'docker ps'
+                            }
+                        }
                         stage('Test') {
                             steps {
                                 dir('billing_service') {
@@ -78,7 +99,7 @@ pipeline {
                 }
             }
         }
-        stage("tesssti"){
+        stage("Build & Push Docker Images"){
             agent{
                 docker{
                     image 'docker:latest'
