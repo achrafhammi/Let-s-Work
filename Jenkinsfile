@@ -71,6 +71,9 @@ pipeline {
                             //args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
+                    environment{
+                        MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
+                    }
                     stages{
                         stage('Checkout') {
                             steps {
@@ -87,16 +90,14 @@ pipeline {
                         stage('Clean up and remove unnecessary dependences'){
                             steps{
                                 dir('subscription-service'){
-                                    withEnv(['MAVEN_OPTS=-Dmaven.repo.local=/var/jenkins_home/.m2/repository']) {
-                                        sh 'mvn clean'
-                                    }
+                                    sh 'mvn clean'
                                 }
                             }
                         }
                         stage('Test & Compile') {
                             steps {
                                 dir('subscription-service') {
-                                    sh 'mvn test compile' 
+                                    sh 'mvn test compile'     
                                 }
                             }
                         }
