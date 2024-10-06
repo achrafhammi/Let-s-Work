@@ -13,13 +13,9 @@ pipeline {
                         stage('Checkout') {
                             steps {
                                 dir('auth-service') {
-                                    checkout([
-                                        $class: 'GitSCM',
-                                        branches: [[name: '*/main']],
-                                        userRemoteConfigs: [[url: 'https://github.com/achrafhammi/Let-s-Work.git']],
-                                        extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'auth-service/']]]]
-                                    ])
-                                    sh 'ls'
+                                    sh 'git clone https://github.com/achrafhammi/Let-s-Work.git /tmp/let-s-work'
+                                    sh 'mv /tmp/let-s-work/auth-service .'
+                                    sh 'rm -rf /tmp/let-s-work'
                                 }
                             }
                         }
@@ -31,9 +27,7 @@ pipeline {
                         }
                         stage('Test') {
                             steps {
-                                dir('auth-service') {
-                                    sh 'GOCACHE=/tmp/go-cache go test ./...' 
-                                }
+                                sh 'GOCACHE=/tmp/go-cache go test ./...' 
                             }
                         }
                     }
