@@ -15,22 +15,19 @@ pipeline {
                         }
                     }
                 }
-/*                stage('Subscription-Service') {
+                stage('Subscription-Service') {
                     agent {
                         docker {
-                            image 'maven:3.6.3-jdk-21'
+                            image 'maven:3.9.9-amazoncorretto-21'
                         }
                     }
                     steps {
-                        script{
-                            sh 'whoami'
-                        }
                         dir('subscription-service') {  // This needs to be inside steps block
                             sh 'java --version'
                             sh 'mvn --version'
                         }
                     }
-                }*/
+                }
             }
         }
     }
