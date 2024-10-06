@@ -6,3 +6,4 @@ pymongo==4.8.0
 python-dotenv==1.0.1
 python-snappy==0.7.3
 weasyprint==62.3
+pylint=3.3.1
