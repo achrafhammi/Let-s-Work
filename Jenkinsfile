@@ -63,10 +63,10 @@ pipeline {
                     }
                 }*/
                 stage('Subscription-Service') {
-                    environment{
-                        MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
+                    environment {
+                        MAVEN_OPTS = '-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
                     }
-                    stages{
+                    stages {
                         stage('Checkout') {
                             steps {
                                 dir('subscription-service') {
@@ -80,7 +80,7 @@ pipeline {
                             }
                         }
                         stage('Test & Compile') {
-                            agent{
+                            agent {
                                 docker {
                                     image 'maven:3.9.9-amazoncorretto-21'
                                     args '-v /var/jenkins_home/.m2:/root/.m2'
@@ -93,7 +93,7 @@ pipeline {
                             }
                         }
                         stage('Clean up & Packaging .jar') {
-                            agent{
+                            agent {
                                 docker {
                                     image 'maven:3.9.9-amazoncorretto-21'
                                     args '-v /var/jenkins_home/.m2:/root/.m2'
@@ -105,10 +105,12 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Building docker image') {
-                            agent{
-                                image 'docker:latest'
-                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        stage('Building Docker Image') {
+                            agent {
+                                docker {
+                                    image 'docker:latest'
+                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                                }
                             }
                             steps {
                                 dir('subscription-service') {
@@ -116,16 +118,18 @@ pipeline {
                                 }
                             }
                         }
-                        stage('Pushing docker image') {
-                            agent{
-                                image 'docker:latest'
-                                args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        stage('Pushing Docker Image') {
+                            agent {
+                                docker {
+                                    image 'docker:latest'
+                                    args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                                }
                             }
                             steps {    
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                        sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                        sh "docker push ${env.DOCKER_REPOSITORY_AUTH}:0.1"
-                                    }
+                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+                                    sh "docker push ${env.DOCKER_REPOSITORY_SUBSCRIPTION}:0.1"
+                                }
                             }
                         }
                     }
