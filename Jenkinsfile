@@ -25,9 +25,10 @@ pipeline {
         stage('Distribute Services') {
             steps {
                 // Move the relevant directories to their respective locations
-                sh 'mv workspace/auth-service ./'
-                sh 'mv workspace/subscription-service ./'
-                sh 'mv workspace/billing_service ./'
+                //sh 'mv workspace/auth-service ./'
+                //sh 'mv workspace/subscription-service ./'
+                //sh 'mv workspace/billing_service ./'
+                sh 'ls'
             }
         }
         stage('Workeo CI/CD Pipeline') {
@@ -48,6 +49,7 @@ pipeline {
                             }
                             steps {
                                 dir('auth-service') {
+                                    sh 'ls'
                                     sh 'GOCACHE=/tmp/go-cache go mod tidy'
                                 }
                             }
