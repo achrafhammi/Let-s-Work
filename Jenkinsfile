@@ -40,6 +40,12 @@ pipeline {
                                 }
                             }
                         }*/
+                        stage('Check Docker Path') {
+                            steps {
+                                sh 'echo $PATH'
+                                sh 'which docker' // This will show if Docker is accessible
+                            }
+                        }
                         stage('Building Docker Image') {
                             steps {
                                 dir('auth-service') {
