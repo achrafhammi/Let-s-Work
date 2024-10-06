@@ -64,8 +64,10 @@ pipeline {
                 }*/
                 stage('Subscription-Service') {
                     agent{
-                        image 'docker:latest'
-                        args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
+                        }
                     }
                     environment{
                         MAVEN_OPTS='-Dmaven.repo.local=/var/jenkins_home/.m2/repository'
