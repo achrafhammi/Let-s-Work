@@ -1,10 +1,5 @@
 pipeline {
-    agent {
-        docker{
-            image 'docker:latest'
-            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    } // No global agent, we'll specify agent per stage
+    agent none // No global agent, we'll specify agent per stage
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
         DOCKER_REPOSITORY_SUBSCRIPTION = 'workeo/subscription-service'
