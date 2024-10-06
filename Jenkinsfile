@@ -53,8 +53,8 @@ pipeline {
                         stage('Push Docker image to docker hub'){
                             steps{
                                 withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-                                    sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
-                                    sh "docker push  ${env.DOCKER_REPOSITORY}/auth-service:0.1"
+                                    sh "docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD docker.io "
+                                    sh "docker push ${env.DOCKER_REPOSITORY}/auth-service:0.1"
                                 }
 
                             }
