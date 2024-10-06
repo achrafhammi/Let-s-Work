@@ -24,7 +24,9 @@ pipeline {
                             }
                         }
                         stage('Clean up and remove unnecessary dependences'){
-                            sh 'pwd'
+                            steps{
+                                sh 'pwd'
+                            }
                         }
                         stage('Test') {
                             steps {
