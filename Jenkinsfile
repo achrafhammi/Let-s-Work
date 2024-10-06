@@ -4,14 +4,6 @@ pipeline {
             image 'docker:latest'
             args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
         }
-        docker{
-            image 'docker:latest'
-            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
-        docker{
-            image 'docker:latest'
-            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
     }
     environment {
         DOCKER_REPOSITORY_AUTH = 'workeo/auth-service'
@@ -23,12 +15,16 @@ pipeline {
             parallel {
                 stage('Auth-Microservice') {
                     agent {
-                        docker {
-                            image 'golang:latest'
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
                     }
                     stages {
                         stage('Setup') {
+                            docker {
+                                image 'golang:latest'
+                            }
                             steps {
                                 // Implicitly clones the repo when the first step runs
                                 script {
@@ -40,6 +36,9 @@ pipeline {
                             }
                         }
                         stage('Clean up and remove unnecessary dependencies') {
+                            docker {
+                                image 'golang:latest'
+                            }
                             steps {
                                 dir('auth-service') {
                                     sh 'GOCACHE=/tmp/go-cache go mod tidy'
@@ -47,6 +46,9 @@ pipeline {
                             }
                         }
                         stage('Test') {
+                            docker {
+                                image 'golang:latest'
+                            }
                             steps {
                                 dir('auth-service') {
                                     sh 'GOCACHE=/tmp/go-cache go test ./...'
@@ -72,13 +74,18 @@ pipeline {
                 }
                 stage('Subscription-Service') {
                     agent {
-                        docker {
-                            image 'maven:3.9.9-amazoncorretto-21'
-                            args '-v /var/jenkins_home/.m2:/root/.m2'
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
+                        
                     }
                     stages {
                         stage('Setup') {
+                            docker {
+                                image 'maven:3.9.9-amazoncorretto-21'
+                                args '-v /var/jenkins_home/.m2:/root/.m2'
+                            }
                             steps {
                                 script {
                                     dir('subscription-service') {
@@ -89,6 +96,10 @@ pipeline {
                             }
                         }
                         stage('Test & Compile') {
+                            docker {
+                                image 'maven:3.9.9-amazoncorretto-21'
+                                args '-v /var/jenkins_home/.m2:/root/.m2'
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn test compile'
@@ -96,6 +107,10 @@ pipeline {
                             }
                         }
                         stage('Clean up & Packaging .jar') {
+                            docker {
+                                image 'maven:3.9.9-amazoncorretto-21'
+                                args '-v /var/jenkins_home/.m2:/root/.m2'
+                            }
                             steps {
                                 dir('subscription-service') {
                                     sh 'mvn clean package'
@@ -121,12 +136,19 @@ pipeline {
                 }
                 stage('Billing-Service') {
                     agent {
-                        docker {
-                            image 'python:3.10-slim'
+                        docker{
+                            image 'docker:latest'
+                            args '-u root -v /var/run/docker.sock:/var/run/docker.sock'
                         }
+                        
                     }
                     stages {
                         stage('Setup') {
+                            agent{
+                                docker {
+                                    image 'python:3.10-slim'
+                                }
+                            }
                             steps {
                                 script {
                                     dir('billing_service') {
@@ -137,6 +159,11 @@ pipeline {
                             }
                         }
                         stage('Test') {
+                            agent{
+                                docker {
+                                    image 'python:3.10-slim'
+                                }
+                            }
                             steps {
                                 dir('billing_service') {
                                     sh 'pip install -r requirements.txt'
