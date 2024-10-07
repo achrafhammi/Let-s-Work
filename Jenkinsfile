@@ -95,14 +95,18 @@ pipeline {
                             }
                         }
                         stage('Install pip-tools'){
-                            dir('billing_service'){
-                                sh 'pip install pip-tools'
+                            steps{
+                                dir('billing_service'){
+                                    sh 'pip install pip-tools'
+                                }
                             }
                         }
                         stage('Clean up and Sync dependencies'){
-                            dir('billing_service'){
-                                sh 'pip-compile --output-file=requirements.txt requirements.in' 
-                                sh 'pip-sync'
+                            steps{
+                                dir('billing_service'){
+                                    sh 'pip-compile --output-file=requirements.txt requirements.in' 
+                                    sh 'pip-sync'
+                                }
                             }
                         }
                         stage("install necessary dependencies"){
