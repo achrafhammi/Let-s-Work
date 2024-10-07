@@ -31,7 +31,7 @@ pipeline {
                         }
                         stage("Install necessary dependencies"){
                             steps{
-                                dir('aut-service'){
+                                dir('auth-service'){
                                     sh 'GOCACHE=/tmp/go-cache go mod download'
                                 }
                             }
