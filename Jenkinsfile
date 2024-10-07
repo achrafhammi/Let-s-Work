@@ -98,13 +98,14 @@ pipeline {
                             steps{
                                 dir('billing_service'){
                                     sh 'pip install pip-tools'
+                                    sh 'cp requirements.txt requirements.in'
                                 }
                             }
                         }
                         stage('Clean up and Sync dependencies'){
                             steps{
                                 dir('billing_service'){
-                                    sh 'pip-compile --output-file=requirements.txt requirements.txt' 
+                                    sh 'pip-compile --output-file=requirements.txt requirements.in' 
                                     sh 'pip-sync'
                                 }
                             }
