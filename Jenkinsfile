@@ -104,7 +104,7 @@ pipeline {
                         stage('Clean up and Sync dependencies'){
                             steps{
                                 dir('billing_service'){
-                                    sh 'pip-compile --output-file=requirements.txt requirements.in' 
+                                    sh 'pip-compile --output-file=requirements.txt requirements.txt' 
                                     sh 'pip-sync'
                                 }
                             }
