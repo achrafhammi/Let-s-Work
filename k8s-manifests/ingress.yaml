@@ -2,18 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: workeo-ingress
-  namespace: auth-service  # Ensure this matches the namespace of your services
+  namespace: auth-service 
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-  - host: workeo.local  # Main route
+  - host: workeo.local 
     http:
       paths:
       - path: /auth
         pathType: Prefix
         backend:
           service:
-            name: auth-service  # Replace with your auth service name
+            name: auth-service 
             port:
               number: 80

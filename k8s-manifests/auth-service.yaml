@@ -99,6 +99,6 @@ spec:
     app: auth-service
   ports:
     - protocol: TCP
-      port: 80        # The port exposed by the service
-      targetPort: 80 # The port your auth-service container listens on
+      port: 80        
+      targetPort: 80 
 
