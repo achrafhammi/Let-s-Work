@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: workeo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: jboss/keycloak:15.0.2
+        env:
+        - name: DB_VENDOR
+          value: POSTGRES
+        - name: DB_ADDR
+          value: auth-postgresql.databases.svc.cluster.local
+        - name: DB_DATABASE
+          value: keycloakdb
+        - name: DB_USER
+          value: keycloakuser
+        - name: DB_PASSWORD
+          value: password
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          httpGet:
+            path: /_status/heatlhz
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_status/ready
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+          periodSeconds: 10
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-service
+  namespace: workeo
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32000
+  selector:
+    app: keycloak

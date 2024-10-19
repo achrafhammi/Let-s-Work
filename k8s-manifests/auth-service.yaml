@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  auth-service
+  namespace: auth-service
+  labels:
+    app:  auth-service
+spec:
+  selector:
+    matchLabels:
+      app: auth-service
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  auth-service
+    spec:
+      containers:
+      - name:  workeo/auth-service
+        image:  workeo/auth-service:latest
+        env:
+        - name: KEYCLOAK_URL
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: KEYCLOAK_URL
+        - name: KEYCLOAK_REALM
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: KEYCLOAK_REALM
+        - name: KEYCLOAK_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: KEYCLOAK_CLIENT_ID
+        - name: KEYCLOAK_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: KEYCLOAK_CLIENT_SECRET
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: KEYCLOAK_ADMIN
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: KEYCLOAK_ADMIN_PASSWORD
+        - name: SERVER_URL
+          valueFrom:
+            secretKeyRef:
+              name: auth-go-secrets
+              key: SERVER_URL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          httpGet:
+            path: /_status/heatlhz
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_status/ready
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+          periodSeconds: 10
+        ports:
+        - containerPort:  80
+          name:  auth-service
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  labels:
+    app: auth-service
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 80        # The port exposed by the service
+      targetPort: 80 # The port your auth-service container listens on
+

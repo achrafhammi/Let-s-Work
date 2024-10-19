@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: auth-service
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: subscription-service
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: billing-service

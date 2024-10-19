@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: auth-psql
+  namespace: auth-service
+spec:
+  selector:
+    matchLabels:
+      app: auth-psql 
+  serviceName: "auth-psql"
+  replicas: 3 
+  template:
+    metadata:
+      labels:
+        app: auth-psql
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: auth-psql
+        image: postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: DB_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: DB_USERS_NAME
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: auth-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: auth-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-psql
+  namespace: auth-service
+spec:
+  clusterIP: None 
+  selector:
+    app: auth-psql
+  ports:
+    - port: 5432
