@@ -30,7 +30,7 @@ spec:
               name: billing-secrets
               key: MONGO_PASSWORD
         ports:
-        - containerPort: 80
+        - containerPort: 27017
           name: web
         volumeMounts:
         - name: billing-data
@@ -55,4 +55,5 @@ spec:
   selector:
     app: billing-db
   ports:
-    - port: 5432
+    - port: 8085
+      targetPort: 27017

@@ -30,15 +30,9 @@ spec:
               name: billing-secrets
               key: MONGO_COLLECTION
         - name: MONGO_HOST
-          valueFrom:
-            secretKeyRef:
-              name: billing-secrets
-              key: MONGO_HOST
+          value: billing-db
         - name: MONGO_PORT
-          valueFrom:
-            secretKeyRef:
-              name: billing-secrets
-              key: MONGO_PORT
+          value: "8085"
         - name: MONGO_USERNAME
           valueFrom:
             secretKeyRef:
@@ -78,7 +72,7 @@ spec:
           failureThreshold: 3
           periodSeconds: 10
         ports:
-        - containerPort:  80
+        - containerPort:  8000
           name:  billing-service
       restartPolicy: Always
 ---
@@ -94,6 +88,15 @@ spec:
     app: billing-service
   ports:
     - protocol: TCP
-      port: 80        
-      targetPort: 80 
+      port: 8080        
+      targetPort: 8000 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-service
+  namespace: billing-service
+spec:
+  type: ExternalName
+  externalName: billing-service.billing-service.svc.cluster.local  # Fully qualified name
 

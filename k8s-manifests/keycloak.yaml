@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: keycloak
-  namespace: workeo
+  namespace: auth-service
 spec:
   replicas: 1
   selector:
@@ -15,18 +15,42 @@ spec:
     spec:
       containers:
       - name: keycloak
-        image: jboss/keycloak:15.0.2
+        image: quay.io/keycloak/keycloak
         env:
-        - name: DB_VENDOR
-          value: POSTGRES
-        - name: DB_ADDR
-          value: auth-postgresql.databases.svc.cluster.local
-        - name: DB_DATABASE
-          value: keycloakdb
-        - name: DB_USER
-          value: keycloakuser
-        - name: DB_PASSWORD
-          value: password
+        - name: KC_DB
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: KC_DB
+        - name: KC_DB_URL_HOST
+          value: auth-db
+        - name: KC_DB_URL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: KC_DB_URL_DATABASE
+        - name: KC_DB_URL_PORT
+          value: "8085"
+        - name: KC_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: KC_DB_USERNAME
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: KC_DB_PASSWORD
+        - name: KEYCLOAK_ADMIN
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: KEYCLOAK_ADMIN
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: auth-db-kc-secrets
+              key: KEYCLOAK_ADMIN_PASSWORD
         resources:
           requests:
             cpu: 100m
@@ -66,13 +90,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: keycloak
+  namespace: auth-service
   labels:
     app: keycloak
 spec:
   type: ClusterIP
   ports:
     - protocol: TCP
-      port: 8080
+      port: 8086
       targetPort: 8080
   selector:
     app: keycloak

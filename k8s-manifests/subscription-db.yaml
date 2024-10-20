@@ -35,8 +35,7 @@ spec:
               name: subscription-secrets
               key: DB_NAME
         ports:
-        - containerPort: 80
-          name: web
+        - containerPort: 5432
         volumeMounts:
         - name: subscription-data
           mountPath: /var/lib/postgresql/data
@@ -60,4 +59,5 @@ spec:
   selector:
     app: subscription-db
   ports:
-    - port: 5432
+    - port: 8085
+      targetPort: 5432
