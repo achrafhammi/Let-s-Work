@@ -4,7 +4,7 @@ metadata:
   name: keycloak
   namespace: auth-service
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: keycloak
@@ -16,6 +16,9 @@ spec:
       containers:
       - name: keycloak
         image: quay.io/keycloak/keycloak
+        command:
+          - "/opt/keycloak/bin/kc.sh"  # or the appropriate startup script
+          - "start-dev" 
         env:
         - name: KC_DB
           valueFrom:
@@ -28,7 +31,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: auth-db-kc-secrets
-              key: KC_DB_URL_DATABASE
+              key: DB_USERS_NAME
         - name: KC_DB_URL_PORT
           value: "8085"
         - name: KC_DB_USERNAME
@@ -53,38 +56,38 @@ spec:
               key: KEYCLOAK_ADMIN_PASSWORD
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: "200m"
+            memory: "256Mi"
           limits:
-            cpu: 100m
-            memory: 100Mi
-        livenessProbe:
-          httpGet:
-            path: /_status/heatlhz
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 3
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /_status/ready
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-          failureThreshold: 3
-          periodSeconds: 10
+            cpu: "1"
+            memory: "1Gi"
+        # livenessProbe:
+        #   httpGet:
+        #     path: /_status/health   # Corrected path
+        #     port: 8080               # Corrected port
+        #   initialDelaySeconds: 120   # Increased initial delay
+        #   timeoutSeconds: 5
+        #   failureThreshold: 3
+        #   periodSeconds: 10
+        # readinessProbe:
+        #   httpGet:
+        #     path: /_status/ready    # Corrected path
+        #     port: 8080              # Corrected port
+        #   initialDelaySeconds: 120   # Increased initial delay
+        #   timeoutSeconds: 2
+        #   failureThreshold: 3
+        #   periodSeconds: 10
         ports:
         - containerPort: 8080
         volumeMounts:
         - name: keycloak-config-volume
-          mountPath: /opt/jboss/keycloak/standalone/data/import.json
-          subPath: import.json
+          mountPath: /opt/keycloak/data/import
+          subPath: import
       volumes:
       - name: keycloak-config-volume
-        hostPath:                  
-          path: /home/achraf/Documents/Let-s-Work/keycloak/keycloak
-          type: File
+        configMap:
+          name: keycloak-config
+        
 ---
 apiVersion: v1
 kind: Service

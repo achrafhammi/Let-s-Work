@@ -9,7 +9,8 @@ spec:
   selector:
     matchLabels:
       app: billing-service
-  replicas: 3
+  serviceName: "billing-db"
+  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -21,8 +22,8 @@ spec:
         app:  billing-service
     spec:
       containers:
-      - name:  workeo/billing-service
-        image:  workeo/billing-service:latest
+      - name:  billing-service
+        image:  workeo/billing-service:0.1
         env:
         - name: MONGO_COLLECTION
           valueFrom:

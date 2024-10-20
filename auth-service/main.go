@@ -5,7 +5,6 @@ import (
 	"auth-service/middleware"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 	"log"
 	"os"
 )
@@ -13,10 +12,10 @@ import (
 func main() {
 
 	fmt.Print("i'm working")
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	//err := godotenv.Load()
+	//if err != nil {
+	//	log.Fatal("Error loading .env file")
+	//}
 
 	app := fiber.New()
 

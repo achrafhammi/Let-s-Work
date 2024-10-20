@@ -5,7 +5,6 @@ go 1.23.0
 require (
 	github.com/Nerzal/gocloak/v13 v13.9.0
 	github.com/gofiber/fiber/v2 v2.52.5
-	github.com/joho/godotenv v1.5.1
 )
 
 require (

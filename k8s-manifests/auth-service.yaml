@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       app: auth-service
-  replicas: 3
+  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name:  auth-service
-        image:  workeo/auth-service:latest
+        image:  workeo/auth-service:0.1
         env:
         - name: KEYCLOAK_URL
           value: keycloak:8086
@@ -58,11 +58,11 @@ spec:
               key: SERVER_URL
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 200m
+            memory: 256Mi
           limits:
-            cpu: 100m
-            memory: 100Mi
+            cpu: 600m
+            memory: 512Mi
         livenessProbe:
           httpGet:
             path: /_status/heatlhz

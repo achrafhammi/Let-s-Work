@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: billing-db 
   serviceName: "billing-db"
-  replicas: 3 
+  replicas: 2
   template:
     metadata:
       labels:
@@ -17,7 +17,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: billing-db
-        image: postgres
+        image: mongo
         env:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:

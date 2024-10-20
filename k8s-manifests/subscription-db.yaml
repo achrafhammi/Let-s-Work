@@ -8,7 +8,7 @@ spec:
     matchLabels:
       app: subscription-db 
   serviceName: "subscription-db"
-  replicas: 3 
+  replicas: 2
   template:
     metadata:
       labels:

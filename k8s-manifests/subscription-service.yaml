@@ -9,7 +9,7 @@ spec:
   selector:
     matchLabels:
       app: subscription-service
-  replicas: 3
+  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -21,8 +21,8 @@ spec:
         app:  subscription-service
     spec:
       containers:
-      - name:  workeo/subscription-service
-        image:  workeo/subscription-service:latest
+      - name:  subscription-service
+        image:  workeo/subscription-service:0.1
         env:
         - name: DB_PASSWORD
           valueFrom:
