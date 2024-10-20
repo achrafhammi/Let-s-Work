@@ -52,6 +52,15 @@ spec:
           periodSeconds: 10
         ports:
         - containerPort: 8080
+        volumeMounts:
+        - name: keycloak-config-volume
+          mountPath: /opt/jboss/keycloak/standalone/data/import.json
+          subPath: import.json
+      volumes:
+      - name: keycloak-config-volume
+        hostPath:                  
+          path: /home/achraf/Documents/Let-s-Work/keycloak/keycloak
+          type: File
 ---
 apiVersion: v1
 kind: Service
@@ -64,6 +73,6 @@ spec:
   ports:
     - protocol: TCP
       port: 8080
-      nodePort: 8080
+      targetPort: 8080
   selector:
     app: keycloak

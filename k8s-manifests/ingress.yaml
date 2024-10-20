@@ -17,3 +17,17 @@ spec:
             name: auth-service 
             port:
               number: 80
+      - path: /subscriptions
+        pathType: Prefix
+        backend:
+          service:
+            name: subscription-service 
+            port:
+              number: 80
+      - path: /billing
+        pathType: Prefix
+        backend:
+          service:
+            name: billing-service 
+            port:
+              number: 80
