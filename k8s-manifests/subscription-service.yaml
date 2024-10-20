@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  subscription-service
+  namespace: subscription-service
+  labels:
+    app:  subscription-service
+spec:
+  selector:
+    matchLabels:
+      app: subscription-service
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  subscription-service
+    spec:
+      containers:
+      - name:  workeo/subscription-service
+        image:  workeo/subscription-service:latest
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: subscription-secrets
+              key: DB_PASSWORD
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: subscription-secrets
+              key: DB_USER
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: subscription-secrets
+              key: DB_URL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          httpGet:
+            path: /_status/heatlhz
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_status/ready
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+          periodSeconds: 10
+        ports:
+        - containerPort:  80
+          name:  subscription-service
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-service
+  labels:
+    app: subscription-service
+spec:
+  type: ClusterIP
+  selector:
+    app: subscription-service
+  ports:
+    - protocol: TCP
+      port: 80        
+      targetPort: 80 
+

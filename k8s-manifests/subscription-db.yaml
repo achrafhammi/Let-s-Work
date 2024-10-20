@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: subscription-db
+  namespace: subscription-service
+spec:
+  selector:
+    matchLabels:
+      app: subscription-db 
+  serviceName: "subscription-db"
+  replicas: 3 
+  template:
+    metadata:
+      labels:
+        app: subscription-db
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: subscription-db
+        image: postgres
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: subscription-secrets
+              key: DB_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: subscription-secrets
+              key: DB_PASSWORD
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: subscription-secrets
+              key: DB_NAME
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: subscription-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: subscription-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscription-db
+  namespace: subscription-service
+spec:
+  clusterIP: None 
+  selector:
+    app: subscription-db
+  ports:
+    - port: 5432
