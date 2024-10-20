@@ -56,12 +56,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: keycloak-service
-  namespace: workeo
+  name: keycloak
+  labels:
+    app: keycloak
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
-    - port: 8080
-      nodePort: 32000
+    - protocol: TCP
+      port: 8080
+      nodePort: 8080
   selector:
     app: keycloak

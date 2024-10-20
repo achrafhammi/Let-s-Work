@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: auth-psql
+  name: auth-db
   namespace: auth-service
 spec:
   selector:
     matchLabels:
-      app: auth-psql 
-  serviceName: "auth-psql"
+      app: auth-db 
+  serviceName: "auth-db"
   replicas: 3 
   template:
     metadata:
       labels:
-        app: auth-psql
+        app: auth-db
     spec:
       terminationGracePeriodSeconds: 10
       containers:
-      - name: auth-psql
+      - name: auth-db
         image: postgres
         env:
         - name: POSTGRES_USER
@@ -53,11 +53,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-psql
+  name: auth-db
   namespace: auth-service
 spec:
   clusterIP: None 
   selector:
-    app: auth-psql
+    app: auth-db
   ports:
     - port: 5432

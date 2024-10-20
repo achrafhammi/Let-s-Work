@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  billing-service
+  namespace: billing-service
+  labels:
+    app:  billing-service
+spec:
+  selector:
+    matchLabels:
+      app: billing-service
+  replicas: 3
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  billing-service
+    spec:
+      containers:
+      - name:  workeo/billing-service
+        image:  workeo/billing-service:latest
+        env:
+        - name: MONGO_COLLECTION
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_COLLECTION
+        - name: MONGO_HOST
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_HOST
+        - name: MONGO_PORT
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_PORT
+        - name: MONGO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_USERNAME
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_PASSWORD
+        - name: DJANGO_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: DJANGO_SECRET_KEY
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        livenessProbe:
+          httpGet:
+            path: /_status/heatlhz
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /_status/ready
+            port: 80
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+          periodSeconds: 10
+        ports:
+        - containerPort:  80
+          name:  billing-service
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-service
+  labels:
+    app: billing-service
+spec:
+  type: ClusterIP
+  selector:
+    app: billing-service
+  ports:
+    - protocol: TCP
+      port: 80        
+      targetPort: 80 
+

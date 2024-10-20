@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: billing-db
+  namespace: billing-service
+spec:
+  selector:
+    matchLabels:
+      app: billing-db 
+  serviceName: "billing-db"
+  replicas: 3 
+  template:
+    metadata:
+      labels:
+        app: billing-db
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+      - name: billing-db
+        image: postgres
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: billing-secrets
+              key: MONGO_PASSWORD
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: billing-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: billing-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: billing-db
+  namespace: billing-service
+spec:
+  clusterIP: None 
+  selector:
+    app: billing-db
+  ports:
+    - port: 5432
