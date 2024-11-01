@@ -4,7 +4,6 @@ metadata:
   name: keycloak
   namespace: auth-service
 spec:
-  replicas: 2
   selector:
     matchLabels:
       app: keycloak
@@ -33,7 +32,7 @@ spec:
               name: auth-db-kc-secrets
               key: DB_USERS_NAME
         - name: KC_DB_URL_PORT
-          value: "8085"
+          value: "5432"
         - name: KC_DB_USERNAME
           valueFrom:
             secretKeyRef:
@@ -61,22 +60,6 @@ spec:
           limits:
             cpu: "1"
             memory: "1Gi"
-        # livenessProbe:
-        #   httpGet:
-        #     path: /_status/health   # Corrected path
-        #     port: 8080               # Corrected port
-        #   initialDelaySeconds: 120   # Increased initial delay
-        #   timeoutSeconds: 5
-        #   failureThreshold: 3
-        #   periodSeconds: 10
-        # readinessProbe:
-        #   httpGet:
-        #     path: /_status/ready    # Corrected path
-        #     port: 8080              # Corrected port
-        #   initialDelaySeconds: 120   # Increased initial delay
-        #   timeoutSeconds: 2
-        #   failureThreshold: 3
-        #   periodSeconds: 10
         ports:
         - containerPort: 8080
         volumeMounts:
@@ -97,7 +80,7 @@ metadata:
   labels:
     app: keycloak
 spec:
-  type: ClusterIP
+  clusterIP: None
   ports:
     - protocol: TCP
       port: 8086

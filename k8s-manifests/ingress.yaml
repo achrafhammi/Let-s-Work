@@ -23,11 +23,11 @@ spec:
           service:
             name: subscription-service 
             port:
-              number: 8080
+              number: 8081
       - path: /billing
         pathType: Prefix
         backend:
           service:
             name: billing-service 
             port:
-              number: 8080
+              number: 8082

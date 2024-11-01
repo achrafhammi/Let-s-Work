@@ -9,7 +9,6 @@ spec:
   selector:
     matchLabels:
       app: subscription-service
-  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -34,56 +33,30 @@ spec:
             secretKeyRef:
               name: subscription-secrets
               key: DB_USER
-        - name: DB_URL
-          value: subscription-db:8085
+        - name: DB_HOST
+          value: 10.244.2.12:8085
         resources:
           requests:
-            cpu: 100m
-            memory: 100Mi
+            cpu: "200m"
+            memory: "256Mi"
           limits:
-            cpu: 100m
-            memory: 100Mi
-        livenessProbe:
-          httpGet:
-            path: /_status/heatlhz
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 3
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /_status/ready
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-          failureThreshold: 3
-          periodSeconds: 10
+            cpu: "1"
+            memory: "1Gi"
         ports:
         - containerPort:  8080
-          name:  subscription-service
       restartPolicy: Always
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: subscription-service
+  namespace: subscription-service
   labels:
     app: subscription-service
 spec:
-  type: ClusterIP
   selector:
     app: subscription-service
   ports:
     - protocol: TCP
-      port: 8080        
-      targetPort: 8080 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: subscription-service
-  namespace: subscription-service
-spec:
-  type: ExternalName
-  externalName: subscription-service.subscription-service.svc.cluster.local  # Fully qualified name
+      port: 8081        
+      targetPort: 8080

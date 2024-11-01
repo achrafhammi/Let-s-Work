@@ -9,7 +9,6 @@ spec:
   selector:
     matchLabels:
       app: auth-service
-  replicas: 2
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -58,27 +57,11 @@ spec:
               key: SERVER_URL
         resources:
           requests:
-            cpu: 200m
-            memory: 256Mi
+            cpu: "200m"
+            memory: "256Mi"
           limits:
-            cpu: 600m
-            memory: 512Mi
-        livenessProbe:
-          httpGet:
-            path: /_status/heatlhz
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 5
-          failureThreshold: 3
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /_status/ready
-            port: 80
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-          failureThreshold: 3
-          periodSeconds: 10
+            cpu: "1"
+            memory: "1Gi"
         ports:
         - containerPort:  3000
           name:  auth-service
@@ -92,20 +75,11 @@ metadata:
   labels:
     app: auth-service
 spec:
-  type: ClusterIP
   selector:
     app: auth-service
   ports:
     - protocol: TCP
       port: 8080        
-      targetPort: 3000 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: auth-service
-  namespace: auth-service
-spec:
-  type: ExternalName
-  externalName: auth-service.auth-service.svc.cluster.local  # Fully qualified name
+      targetPort: 3000
+
 
